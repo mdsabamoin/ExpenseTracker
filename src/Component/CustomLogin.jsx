@@ -21,6 +21,14 @@ const CustomLogin = () => {
                     }
                  const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA`,obj);
                  const data = response.data;
+                 if(data.idToken){
+                    const objForToken = {"idToken":data.idToken}
+                    localStorage.setItem("idToken",objForToken.idToken);
+                    ctx.setEnter(true);
+                    ctx.setIdToken(objForToken);
+                 }
+                 
+                 
                  ctx.setEmail("");
                  ctx.setPassword("");
                  ctx.setConfirmPassword("");
@@ -52,9 +60,10 @@ const CustomLogin = () => {
 
         }catch(error){
             if(ctx.isLogin){
-                alert(error.response.data.error.message);
+                alert(error);
+                console.log(error?.response?.data?.error?.message);
             }else{
-                alert(error.response.data.error.message);
+                alert(error?.response?.data?.error?.message);
             }
            
         }
