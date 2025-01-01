@@ -25,7 +25,7 @@ const CustomLogin = () => {
                     const objForToken = {"idToken":data.idToken}
                     localStorage.setItem("idToken",objForToken.idToken);
                     ctx.setEnter(true);
-                    ctx.setIdToken(objForToken);
+                    ctx.setIdToken(data.idToken);
                  }
                  
                  

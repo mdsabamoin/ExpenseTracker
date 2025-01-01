@@ -4,6 +4,7 @@
 import CustomLogin from "./Component/CustomLogin";
  import 'bootstrap/dist/css/bootstrap.min.css';
 import { Context } from "./Store/ContextProvider";
+import Welcome from "./Component/Welcome";
 
 function App() {
 
@@ -11,7 +12,7 @@ function App() {
 
   return (
     <div>
-     {ctx.enter?<h1>Welcome to expense Tracker!!!</h1>:<CustomLogin/>}
+     {ctx.enter?<Welcome/>:<CustomLogin/>}
     </div>
   );
 }
