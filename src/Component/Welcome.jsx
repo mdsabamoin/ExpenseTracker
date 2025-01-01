@@ -8,7 +8,10 @@ import WelcomePage from "./WelcomePage";
 const Welcome =()=>{
 
        const ctx = useContext(Context);
-        
+        const LoadFormHandler = ()=>{
+            ctx.setForm(true);
+            localStorage.setItem("form","true")
+        }
 
     return <>
     <div style={{display:"flex",justifyContent:"space-between",width:"100%"}}>
@@ -16,7 +19,7 @@ const Welcome =()=>{
         <div> 
         <h6 style={{width:ctx.form?"58%%":"45%%",float:"right",fontSize:"small"}}>
             {ctx.form?"Your profile is 64% complete.A complete profile has higher chances of landing a job":"Your Profile is incomplete  ."}
-            <Button variant="info" style={{fontSize:"14px",display:"inline-block"}} onClick={()=>{ctx.setForm(true)}}>Complete Now</Button>
+            <Button variant="info" style={{fontSize:"14px",display:"inline-block"}} onClick={LoadFormHandler}>Complete Now</Button>
             </h6>
         
         </div>

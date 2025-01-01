@@ -16,16 +16,25 @@ const WelcomePage = () => {
     const HandleFormSubmit = async(e)=>{
         e.preventDefault();
      try{
-        const obj={
-            "idToken":ctx.idToken,
-            "name":ctx.name,
-            "url":ctx.url
+        
+        if(ctx.name && ctx.url){
+            const obj={
+                "idToken":ctx.idToken,
+                "displayName":ctx.name,
+                "photoUrl":ctx.url
+            }
+           
+            const response = await axios.post("https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA",obj)
+           
+            if(response.data){
+                alert("UPDATED")
+                ctx.setDetails(obj);
+            }
         }
-        const response = await axios.post("https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA",obj)
-        if(response.data){
-            alert("UPDATED")
-            ctx.setDetails(obj);
+        else{
+            alert("Please Fill the Details")
         }
+       
      } catch(error){
         
         alert(error);
@@ -40,7 +49,7 @@ const WelcomePage = () => {
     <div  style={{marginLeft:"30%",marginRight:"4%"}}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span><h4>Contact Details</h4></span>
-            <Button variant="outline-danger">Cancel</Button>
+            <Button variant="outline-danger" onClick={()=>{ctx.setForm(false)}}>Cancel</Button>
         </div>
 
         <div  style={{marginTop:"2%"}}>
@@ -52,7 +61,7 @@ const WelcomePage = () => {
                         <FaGithub /> Full Name
                         </Form.Label>
                         <Col sm="6">
-                            <Form.Control type="text" onChange={e=>ctx.setName(e.target.value)}/>
+                            <Form.Control type="text" onChange={(e)=>{ctx.setName(e.target.value);console.log(e.target.value)}} value={ctx.name}/>
                         </Col>
                     </Form.Group>
                 </Col>
@@ -63,7 +72,7 @@ const WelcomePage = () => {
                         <CiGlobe /> Profile Photo URL
                         </Form.Label>
                         <Col sm="6">
-                            <Form.Control type="url" onChange={e=>ctx.setUrl(e.target.value)}/>
+                            <Form.Control type="url" onChange={(e)=>{ctx.setUrl(e.target.value);console.log(e.target.value)}} value={ctx.url} />
                         </Col>
                     </Form.Group>
                 </Col>

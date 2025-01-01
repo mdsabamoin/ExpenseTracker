@@ -72,7 +72,7 @@ const CustomLogin = () => {
 
 
     return <>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", width: "100vw" }}>
+       {!ctx.enter && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", width: "100vw" }}>
             <Card style={{ width: '18rem', backgroundColor: "orange" }}>
                 <Card.Body>
 
@@ -100,7 +100,7 @@ const CustomLogin = () => {
                     <h6 style={{ marginTop: "4%", display: "flex", justifyContent: "space-around" }}>{ctx.isLogin ? "Don't Have an Account?" : "Have an Account?"}<Button variant="primary" onClick={() => ctx.setIsLogin(!ctx.isLogin)} style={{ width: "43%" }}>{ctx.isLogin ? "Sign Up" : "Login"}</Button></h6>
                 </Card.Body>
             </Card>
-        </div>
+        </div>}
     </>
 }
 
