@@ -12,7 +12,9 @@ const Context = React.createContext({
     emailVerified:false,
     url:"",
     details:"",
+    forgotpassword:false,
     setEmailVerified:()=>{},
+    setForgotPassword:()=>{},
     setDetails:()=>{},
     setUrl:()=>{},
     setName:()=>{},
@@ -38,8 +40,9 @@ const ContextProvider = (props)=>{
     const [url,setUrl] = useState("");
     const [details,setDetails] = useState("");
     const [emailVerified, setEmailVerified] = useState(false);
+    const [forgotpassword, setForgotPassword] = useState(false);
 
-    return <Context.Provider value={{isLogin,details,emailVerified,email,name,url,idToken,form,enter,password,confirmpassword,setEmailVerified,setDetails,setName,setUrl,setForm,setEnter,setIdToken,setEmail,setPassword,setConfirmPassword,setIsLogin}}>{props.children}</Context.Provider>
+    return <Context.Provider value={{isLogin,details,emailVerified,forgotpassword,email,name,url,idToken,form,enter,password,confirmpassword,setForgotPassword,setEmailVerified,setDetails,setName,setUrl,setForm,setEnter,setIdToken,setEmail,setPassword,setConfirmPassword,setIsLogin}}>{props.children}</Context.Provider>
 }
 
 export {Context,ContextProvider}

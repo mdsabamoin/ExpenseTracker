@@ -6,6 +6,7 @@ import CustomLogin from "./Component/CustomLogin";
 import { Context } from "./Store/ContextProvider";
 import Welcome from "./Component/Welcome";
 import axios from "axios";
+import ForgotPassword from "./Component/ForgotPassword";
 function App() {
 
   const ctx = useContext(Context);
@@ -45,8 +46,14 @@ function App() {
 
   return (
     <div>
-     {ctx.enter?<Welcome/>:<CustomLogin/>}
-    </div>
+    {ctx.forgotpassword ? (
+      <ForgotPassword onCancel={() => ctx.setForgotPassword(false)} />
+    ) : ctx.enter ? (
+      <Welcome />
+    ) : (
+      <CustomLogin />
+    )}
+  </div>
   );
 }
 
