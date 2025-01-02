@@ -26,6 +26,7 @@ const CustomLogin = () => {
                     localStorage.setItem("idToken",objForToken.idToken);
                     ctx.setEnter(true);
                     ctx.setIdToken(data.idToken);
+                    ctx.setEmailVerified(false);
                  }
                  
                  
@@ -60,7 +61,7 @@ const CustomLogin = () => {
 
         }catch(error){
             if(ctx.isLogin){
-                alert(error);
+                alert(error?.response?.data?.error?.message);
                 console.log(error?.response?.data?.error?.message);
             }else{
                 alert(error?.response?.data?.error?.message);

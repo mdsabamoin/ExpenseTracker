@@ -25,6 +25,7 @@ function App() {
           if(user){
             ctx.setName(user.displayName || "");
             ctx.setUrl(user.photoUrl || "");
+            ctx.setEmailVerified(user.emailVerified || false);
           }
          
         })

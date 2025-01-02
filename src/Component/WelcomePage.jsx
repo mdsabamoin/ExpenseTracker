@@ -61,7 +61,7 @@ const WelcomePage = () => {
                         <FaGithub /> Full Name
                         </Form.Label>
                         <Col sm="6">
-                            <Form.Control type="text" onChange={(e)=>{ctx.setName(e.target.value);console.log(e.target.value)}} value={ctx.name}/>
+                            <Form.Control type="text" onChange={(e)=>{ctx.setName(e.target.value)}} value={ctx.name}/>
                         </Col>
                     </Form.Group>
                 </Col>
@@ -72,7 +72,7 @@ const WelcomePage = () => {
                         <CiGlobe /> Profile Photo URL
                         </Form.Label>
                         <Col sm="6">
-                            <Form.Control type="url" onChange={(e)=>{ctx.setUrl(e.target.value);console.log(e.target.value)}} value={ctx.url} />
+                            <Form.Control type="url" onChange={(e)=>{ctx.setUrl(e.target.value)}} value={ctx.url} />
                         </Col>
                     </Form.Group>
                 </Col>
