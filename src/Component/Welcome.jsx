@@ -4,6 +4,7 @@ import { Context } from "../Store/ContextProvider";
 import WelcomePage from "./WelcomePage";
 import axios from "axios";
 import { MdVerified } from "react-icons/md";
+import ExpenseTracker from "./ExpenseTracker";
 
 
 
@@ -75,7 +76,7 @@ const Welcome = () => {
         </div>
         }
         <hr />
-        {ctx.form ? <WelcomePage /> : null}
+        {ctx.form ? <WelcomePage /> : <ExpenseTracker/>}
     </>
 }
 
