@@ -6,13 +6,15 @@ import { Form, Button, Table } from "react-bootstrap";
 
 const ExpenseTracker = () => {
     const { idToken } = useContext(Context);
+    const ctx = useContext(Context);
   const [expenses, setExpenses] = useState([]);
   const [formData, setFormData] = useState({
     amount: "",
     description: "",
     category: "Food",
   });
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const firebaseUrl = "https://expensetracker-e079e-default-rtdb.firebaseio.com/expenses.json";
@@ -54,23 +56,57 @@ const ExpenseTracker = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      const response = await axios.post(firebaseUrl, formData);
-      if (response.status === 200) {
-        const newExpense = { id: response.data.name, ...formData };
-        setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-        setFormData({ amount: "", description: "", category: "Food" });
+    if (isEditing) {
+        // PUT request to update expense
+        axios
+          .put(`https://expensetracker-e079e-default-rtdb.firebaseio.com/expenses/${editId}.json`, formData)
+          .then(() => {
+            setExpenses((prev) =>
+              prev.map((expense) =>
+                expense.id === editId ? { ...expense, ...formData } : expense
+              )
+            );
+            setIsEditing(false);
+            setEditId(null);
+            setFormData({ amount: "", description: "", category: "" });
+          });
+      } else{
+
+        try {
+            setIsLoading(true);
+            const response = await axios.post(firebaseUrl, formData);
+            if (response.status === 200) {
+              const newExpense = { id: response.data.name, ...formData };
+              setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+              setFormData({ amount: "", description: "", category: "Food" });
+            }
+          } catch (error) {
+            console.error("Error saving expense:", error);
+            alert("Failed to save expense. Please try again.");
+          } finally {
+            setIsLoading(false);
+          }
       }
-    } catch (error) {
-      console.error("Error saving expense:", error);
-      alert("Failed to save expense. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+
+  };
+
+  const handleEdit = (expense) => {
+    setIsEditing(true);
+    setEditId(expense.id);
+    setFormData({
+      amount: expense.amount,
+      description: expense.description,
+      category: expense.category,
+    });
   };
 
 
+  const handleDelete = (id) => {
+    axios.delete(`https://expensetracker-e079e-default-rtdb.firebaseio.com/expenses/${id}.json`).then(() => {
+      setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+      console.log("Expense successfully deleted");
+    });
+  };
 
   return (
     <div style={{ margin: "2rem auto", maxWidth: "600px" }}>
@@ -113,9 +149,7 @@ const ExpenseTracker = () => {
             <option value="Others">Others</option>
           </Form.Control>
         </Form.Group>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Add Expense"}
-        </button>
+        <button type="submit">{isEditing ? "Update" : "Add"} Expense</button>
       </Form>
 
       <div style={{ marginTop: "2rem" }}>
@@ -138,6 +172,8 @@ const ExpenseTracker = () => {
                 <td>{expense.amount}</td>
                 <td>{expense.description}</td>
                 <td>{expense.category}</td>
+                <td><button onClick={() => handleEdit(expense)}>Edit</button></td>
+                <td><button onClick={() => handleDelete(expense.id)}>Delete</button></td>
               </tr>
             ))}
           </tbody>
