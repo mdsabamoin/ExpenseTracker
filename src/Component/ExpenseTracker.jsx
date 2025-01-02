@@ -1,9 +1,11 @@
 
-
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { Context } from "../Store/ContextProvider";
 import { Form, Button, Table } from "react-bootstrap";
 
 const ExpenseTracker = () => {
+    const { idToken } = useContext(Context);
   const [expenses, setExpenses] = useState([]);
   const [formData, setFormData] = useState({
     amount: "",
@@ -11,21 +13,64 @@ const ExpenseTracker = () => {
     category: "Food",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const firebaseUrl = "https://expensetracker-e079e-default-rtdb.firebaseio.com/expenses.json";
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(firebaseUrl);
+        if (response.data) {
+          const loadedExpenses = Object.keys(response.data).map((key) => ({
+            id: key,
+            ...response.data[key],
+          }));
+          setExpenses(loadedExpenses);
+        }
+      } catch (error) {
+        alert("Error fetching expenses:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.amount || !formData.description) {
-      alert("Please fill out all fields!");
+
+    // Validate form
+    if (!formData.amount || !formData.description || !formData.category) {
+      alert("Please fill all fields!");
       return;
     }
 
-    setExpenses((prevExpenses) => [...prevExpenses, formData]);
-    setFormData({ amount: "", description: "", category: "Food" });
+    try {
+      setIsLoading(true);
+      const response = await axios.post(firebaseUrl, formData);
+      if (response.status === 200) {
+        const newExpense = { id: response.data.name, ...formData };
+        setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+        setFormData({ amount: "", description: "", category: "Food" });
+      }
+    } catch (error) {
+      console.error("Error saving expense:", error);
+      alert("Failed to save expense. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
 
   return (
     <div style={{ margin: "2rem auto", maxWidth: "600px" }}>
@@ -68,13 +113,15 @@ const ExpenseTracker = () => {
             <option value="Others">Others</option>
           </Form.Control>
         </Form.Group>
-        <Button type="submit" variant="primary" style={{ width: "100%" }}>
-          Add Expense
-        </Button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Saving..." : "Add Expense"}
+        </button>
       </Form>
 
       <div style={{ marginTop: "2rem" }}>
         <h4>Expenses List</h4>
+        {isLoading && <p>Loading...</p>}
+      {expenses.length === 0 && !isLoading && <p>No expenses found.</p>}
         <Table striped bordered hover>
           <thead>
             <tr>
