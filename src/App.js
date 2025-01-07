@@ -7,11 +7,17 @@ import axios from "axios";
 import ForgotPassword from "./Component/ForgotPassword";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./Slices/AuthSice";
+import "./App.css";
 
 function App() {
   const enter = useSelector((state) => state.auth.enter);
   const ctx = useContext(Context);
   const dispatch = useDispatch();
+  const theme = useSelector((state) => state.theme.theme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const fetchUserData = async () => {

@@ -3,9 +3,12 @@ import axios from "axios";
 import { Form, Button, Table, Spinner, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addExpense, deleteExpense, updateExpense, setExpenses } from "../Slices/ExpenseSlice";
+import { toggleTheme } from '../Slices/themeSlice';
+import { exportToCSV } from "../Download/Csv";
 
 const ExpenseTracker = () => {
     const dispatch = useDispatch();
+    const theme = useSelector((state) => state.theme.theme);
     const expenses = useSelector((state) => state.expenses.expenses);
     const [formData, setFormData] = useState({
         amount: "",
@@ -124,6 +127,10 @@ const ExpenseTracker = () => {
 
     return (
         <div style={{ margin: "2rem auto", maxWidth: "600px" }}>
+            <button onClick={() => exportToCSV(expenses)}>Download CSV</button>
+            <button onClick={() => dispatch(toggleTheme())}>
+        Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
+      </button>
             <h3>Daily Expense Tracker</h3>
             <Form onSubmit={handleFormSubmit}>
                 <Form.Group controlId="formAmount" style={{ marginBottom: "1rem" }}>
