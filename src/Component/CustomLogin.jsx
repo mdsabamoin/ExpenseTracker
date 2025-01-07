@@ -1,110 +1,157 @@
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Context } from '../Store/ContextProvider';
-import axios from "axios"
+import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../Slices/AuthSice';
+
 const CustomLogin = () => {
-
     const ctx = useContext(Context);
+    const [isLogin, setIsLogin] = useState(true);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const HandleFormSubmit = async (event) => {
+    const dispatch = useDispatch();
+    const enter = useSelector((state) => state.auth.enter);
+
+    // Function to handle form submission
+    const handleFormSubmit = async (event) => {
         event.preventDefault();
+        setError(""); // Reset error
 
-        try {
-
-            if (ctx.isLogin) {
-                if (ctx.email && ctx.password) {
-                    const obj = {
-                        "email": ctx.email,
-                        "password": ctx.password
-                    }
-                    const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA`, obj);
-                    const data = response.data;
-                    if (data.idToken) {
-                        const objForToken = { "idToken": data.idToken }
-                        localStorage.setItem("idToken", objForToken.idToken);
-                        ctx.setEnter(true);
-                        ctx.setIdToken(data.idToken);
-                        ctx.setEmailVerified(false);
-                    }
-
-
-                    ctx.setEmail("");
-                    ctx.setPassword("");
-                    ctx.setConfirmPassword("");
-                    //  console.log(data);
-
-                } else {
-                    alert("FILL ALL THE DETAILS")
-                }
-            }
-            if (!ctx.isLogin) {
-                if (ctx.email && ctx.password && ctx.confirmpassword) {
-                    if (ctx.confirmpassword === ctx.password) {
-                        const obj = {
-                            "email": ctx.email,
-                            "password": ctx.password
-                        }
-                        const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA`, obj)
-                        const data = response.data;
-                        alert(`Your Account with Email id ${data.email} created`)
-                        ctx.setEmail("");
-                        ctx.setPassword("");
-                        ctx.setConfirmPassword("");
-                    }
-
-                } else {
-                    alert("FILL ALL THE DETAILS")
-                }
-            }
-
-        } catch (error) {
-            if (ctx.isLogin) {
-                alert(error?.response?.data?.error?.message);
-                console.log(error?.response?.data?.error?.message);
-            } else {
-                alert(error?.response?.data?.error?.message);
-            }
-
+        if (!email || !password || (!isLogin && !confirmPassword)) {
+            setError("Please fill in all fields!");
+            return;
         }
 
-    }
+        if (!isLogin && password !== confirmPassword) {
+            setError("Passwords do not match!");
+            return;
+        }
 
+        setLoading(true);
 
-    return <>
-        {!ctx.enter && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", width: "100vw" }}>
-            <Card style={{ width: '18rem', backgroundColor: "orange" }}>
-                <Card.Body>
+        try {
+            let response;
+            if (isLogin) {
+                // Login Logic
+                response = await axios.post(
+                    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA`,
+                    { email, password }
+                );
+                const { idToken } = response.data;
+                if (idToken) {
+                    localStorage.setItem("idToken", idToken);
+                    dispatch(login({ idToken }));
+                    ctx.setEmailVerified(false);
+                }
+            } else {
+                // Signup Logic
+                response = await axios.post(
+                    `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBf6QbBbnG0QBk-3fhKn_Eag5CLYS7O5kA`,
+                    { email, password }
+                );
+                alert(`Account created for ${response.data.email}`);
+            }
 
-                    <h3 style={{ textAlign: "center" }}>{ctx.isLogin ? "Login" : "Sign Up"}</h3>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control type="email" placeholder="name@example.com" onChange={e => ctx.setEmail(e.target.value)} value={ctx.email} />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formPlaintextPassword">
-                            <Form.Label>
-                                Password
-                            </Form.Label>
-                            <Form.Control type="password" placeholder="Password" onChange={e => ctx.setPassword(e.target.value)} value={ctx.password} />
+            // Reset form fields
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+        } catch (error) {
+            setError(error?.response?.data?.error?.message || "Something went wrong.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                        </Form.Group>
-                        {!ctx.isLogin && <Form.Group className="mb-3" controlId="formPlaintextPassword">
-                            <Form.Label>
-                                Confirm Password
-                            </Form.Label>
-                            <Form.Control type="password" placeholder="Confirm Password" onChange={e => ctx.setConfirmPassword(e.target.value)} value={ctx.confirmpassword} />
-                        </Form.Group>}
-                        <Button variant="success" onClick={HandleFormSubmit} style={{ width: "100%" }}>{ctx.isLogin ? "Login" : "Sign Up"}</Button>
-                    </Form>
-                    {ctx.isLogin && <Button variant="link" style={{ marginTop: "10px", fontSize: "14px" }}
-                        onClick={() => ctx.setForgotPassword(true)}>Forgot Password?</Button>}
-                    <h6 style={{ marginTop: "4%", display: "flex", justifyContent: "space-around" }}>{ctx.isLogin ? "Don't Have an Account?" : "Have an Account?"}<Button variant="primary" onClick={() => ctx.setIsLogin(!ctx.isLogin)} style={{ width: "43%" }}>{ctx.isLogin ? "Sign Up" : "Login"}</Button></h6>
-                </Card.Body>
-            </Card>
-        </div>}
-    </>
-}
+    return (
+        <>
+            {!enter && (
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100vh",
+                        width: "100vw",
+                    }}
+                >
+                    <Card style={{ width: '18rem', backgroundColor: "orange" }}>
+                        <Card.Body>
+                            <h3 style={{ textAlign: "center" }}>
+                                {isLogin ? "Login" : "Sign Up"}
+                            </h3>
+                            <Form>
+                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                                    <Form.Label>Email address</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3" controlId="formPlaintextPassword">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </Form.Group>
+                                {!isLogin && (
+                                    <Form.Group className="mb-3" controlId="formPlaintextPassword">
+                                        <Form.Label>Confirm Password</Form.Label>
+                                        <Form.Control
+                                            type="password"
+                                            placeholder="Confirm Password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                        />
+                                    </Form.Group>
+                                )}
+                                {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+                                <Button
+                                    variant="success"
+                                    onClick={handleFormSubmit}
+                                    style={{ width: "100%" }}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+                                </Button>
+                            </Form>
+                            {isLogin && (
+                                <Button
+                                    variant="link"
+                                    style={{ marginTop: "10px", fontSize: "14px" }}
+                                    onClick={() => ctx.setForgotPassword(true)}
+                                >
+                                    Forgot Password?
+                                </Button>
+                            )}
+                            <h6 style={{ marginTop: "4%", display: "flex", justifyContent: "space-around" }}>
+                                {isLogin ? "Don't Have an Account?" : "Have an Account?"}
+                                <Button
+                                    variant="primary"
+                                    onClick={() => setIsLogin(!isLogin)}
+                                    style={{ width: "43%" }}
+                                >
+                                    {isLogin ? "Sign Up" : "Login"}
+                                </Button>
+                            </h6>
+                        </Card.Body>
+                    </Card>
+                </div>
+            )}
+        </>
+    );
+};
 
 export default CustomLogin;
