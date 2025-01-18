@@ -20,6 +20,7 @@ const ExpenseTracker = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const[premium , SetPremium] = useState(false);
 
     const firebaseUrl = "https://expensetracker-e079e-default-rtdb.firebaseio.com/expenses.json";
 
@@ -127,10 +128,7 @@ const ExpenseTracker = () => {
 
     return (
         <div style={{ margin: "2rem auto", maxWidth: "600px" }}>
-            <button onClick={() => exportToCSV(expenses)}>Download CSV</button>
-            <button onClick={() => dispatch(toggleTheme())}>
-        Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
-      </button>
+           
             <h3>Daily Expense Tracker</h3>
             <Form onSubmit={handleFormSubmit}>
                 <Form.Group controlId="formAmount" style={{ marginBottom: "1rem" }}>
@@ -205,11 +203,20 @@ const ExpenseTracker = () => {
                     </tbody>
                 </Table>
                 {totalExpense > 10000 && expenses.length > 0 && (
-                    <Button variant="danger" style={{ marginTop: "20px" }}>
+                    <Button variant="danger" style={{ marginTop: "20px" }} onClick={()=>SetPremium(true)}>
                         Activate Premium
                     </Button>
+                    
                 )}
+                
             </div>
+            {premium  && <div style={{marginTop:"2%"}}>
+            <button style={{marginRight:"2%"}} onClick={() => exportToCSV(expenses)}>Download CSV</button>
+            <button style={{marginLeft:"2%",marginRight:"2%"}}  onClick={() => dispatch(toggleTheme())}>
+        Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
+      </button>
+      <button  style={{marginLeft:"2%"}} onClick={() => SetPremium(false)}>Close</button>
+      </div>}
         </div>
     );
 };

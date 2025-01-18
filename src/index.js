@@ -10,11 +10,11 @@ import { store } from './ReduxStore/Store';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider  store={store}>
-    <ContextProvider>
+    {/* <ContextProvider> */}
  {/* // <React.StrictMode> */}
  <App />
   {/* // </React.StrictMode> */}
-  </ContextProvider>
+  {/* </ContextProvider> */}
   </Provider>
  
   

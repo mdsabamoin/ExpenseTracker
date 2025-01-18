@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Button, Form, Spinner, Alert } from "react-bootstrap";
 import axios from "axios";
+import Card from 'react-bootstrap/Card';
+import { useSelector } from "react-redux";
+
 
 const ForgotPassword = ({ onCancel }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const forgotpassword = useSelector((state)=>state.auth.ForgotPassword)
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -35,9 +39,20 @@ const ForgotPassword = ({ onCancel }) => {
   };
 
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-form">
-        <h3>Forgot Password</h3>
+     <>
+   <div style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100vw",
+    height: "100vh",
+    margin: 0, // Reset default margins
+    padding: 0,
+    boxSizing: "border-box" }}>
+    <div>
+      <Card style={{width: '17rem', height: "22rem" ,backgroundColor:"pink" }}>
+      <div >
+        <h3 style={{textAlign:"center"}}>Forgot Password</h3>
         <Form onSubmit={handleForgotPassword}>
           {success && (
             <Alert variant="success" className="mt-3">
@@ -50,23 +65,27 @@ const ForgotPassword = ({ onCancel }) => {
             </Alert>
           )}
           <Form.Group controlId="forgotPasswordEmail">
-            <Form.Label>Email Address</Form.Label>
+            <Form.Label style={{ margin: "0 auto", textAlign: "center", width: "100%" }}><h5>Email Address</h5></Form.Label>
             <Form.Control
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+            
             />
           </Form.Group>
+          <div style={{display:"flex",justifyContent:"center",flexDirection:"column"}}>
           <Button
             type="submit"
             variant="primary"
             className="mt-3"
             disabled={loading}
+            
           >
             {loading ? <Spinner animation="border" size="sm" /> : "Reset Password"}
           </Button>
+          <br/>
           <Button
             variant="link"
             className="mt-2"
@@ -74,9 +93,13 @@ const ForgotPassword = ({ onCancel }) => {
           >
             Back to Login
           </Button>
+          </div>
         </Form>
       </div>
+      </Card>
     </div>
+    </div>
+    </>
   );
 };
 

@@ -5,10 +5,10 @@ import { useContext, useState } from 'react';
 import { Context } from '../Store/ContextProvider';
 import axios from "axios";
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../Slices/AuthSice';
+import { login ,setForgotPassword,setIdToken} from '../Slices/AuthSice';
 
 const CustomLogin = () => {
-    const ctx = useContext(Context);
+    // const ctx = useContext(Context);
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ const CustomLogin = () => {
 
     const dispatch = useDispatch();
     const enter = useSelector((state) => state.auth.enter);
-
+       
     // Function to handle form submission
     const handleFormSubmit = async (event) => {
         event.preventDefault();
@@ -45,10 +45,12 @@ const CustomLogin = () => {
                     { email, password }
                 );
                 const { idToken } = response.data;
+                console.log(response.data);
                 if (idToken) {
+                    dispatch(login());
                     localStorage.setItem("idToken", idToken);
-                    dispatch(login({ idToken }));
-                    ctx.setEmailVerified(false);
+                    // dispatch(setIdToken({"idToken":idToken}));
+                    // ctx.setEmailVerified(false);
                 }
             } else {
                 // Signup Logic
@@ -131,7 +133,7 @@ const CustomLogin = () => {
                                 <Button
                                     variant="link"
                                     style={{ marginTop: "10px", fontSize: "14px" }}
-                                    onClick={() => ctx.setForgotPassword(true)}
+                                    onClick={() => dispatch(setForgotPassword(true))}
                                 >
                                     Forgot Password?
                                 </Button>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -7,23 +7,31 @@ import { FaGithub } from "react-icons/fa";
 import { CiGlobe } from "react-icons/ci";
 import { Context } from "../Store/ContextProvider";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setForm,setDetails } from "../Slices/AuthSice";
+import Card from 'react-bootstrap/Card';
 
 const WelcomePage = () => {
-  const ctx = useContext(Context);
-
+  // const ctx = useContext(Context);
+  const name= useSelector((state)=>state.auth.name);
+  const url = useSelector((state)=>state.auth.url);
+  const idToken = localStorage.getItem("idToken");
+  const [lname,setlname] = useState("");
+  const [lurl,setlurl] = useState("");
+  const dispatch = useDispatch();
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!ctx.name || !ctx.url) {
+    if (!lname || !lurl) {
       alert("Please fill in all the details.");
       return;
     }
 
     try {
       const obj = {
-        idToken: ctx.idToken,
-        displayName: ctx.name,
-        photoUrl: ctx.url,
+        idToken: idToken,
+        displayName: lname,
+        photoUrl: lurl
       };
 
       const response = await axios.post(
@@ -32,8 +40,11 @@ const WelcomePage = () => {
       );
 
       if (response.data) {
-        alert("Details updated successfully!");
-        ctx.setDetails(obj);
+        console.log(response.data)
+        alert(`Details with LocalId ${response.data.localId}updated successfully!`);
+        dispatch(setDetails(obj));
+        setlname("");
+        setlurl("");
       }
     } catch (error) {
       console.error("Error updating details:", error);
@@ -41,14 +52,15 @@ const WelcomePage = () => {
     }
   };
 
-  return (
+  return (<div>
+    <div style={{ width: '22rem',display:"flex",justifyContent:"center",alignItems:"center",width:"100vw",height:"80vh" }}>
     <div className="welcome-container">
       <div className="header">
         <h4>Contact Details</h4>
         <Button
           variant="outline-danger"
           onClick={() => {
-            ctx.setForm(false);
+            dispatch(setForm(false))
           }}
         >
           Cancel
@@ -56,37 +68,36 @@ const WelcomePage = () => {
       </div>
 
       <div className="form-container">
-        <Form>
+        <Form  onSubmit={handleFormSubmit}>
           <Row>
             <Col>
-              <Form.Group as={Row}>
-                <Form.Label column sm="6">
+              <Form.Group as={Row}  className="mb-1">
+                <Form.Label column sm="5" className="text-end">
                   <FaGithub /> Full Name
                 </Form.Label>
-                <Col sm="6">
+                <Col sm="7">
                   <Form.Control
                     type="text"
-                    onChange={(e) => {
-                      ctx.setName(e.target.value);
-                    }}
-                    value={ctx.name}
+                    onChange={(e) =>setlname(e.target.value)}
+                    value={lname}
+                    required
                   />
                 </Col>
               </Form.Group>
             </Col>
 
             <Col>
-              <Form.Group as={Row}>
-                <Form.Label column sm="6">
+              <Form.Group as={Row}  className="mb-1">
+                <Form.Label column sm="5" className="text-end" style={{ whiteSpace: "nowrap" }}>
                   <CiGlobe /> Profile Photo URL
                 </Form.Label>
-                <Col sm="6">
+                <Col sm="7">
                   <Form.Control
                     type="url"
-                    onChange={(e) => {
-                      ctx.setUrl(e.target.value);
-                    }}
-                    value={ctx.url}
+                    onChange={(e) => setlurl(e.target.value)}
+                    value={lurl}
+                    required
+                    
                   />
                 </Col>
               </Form.Group>
@@ -95,7 +106,7 @@ const WelcomePage = () => {
 
           <Row className="mt-3">
             <Col>
-              <Button variant="success" onClick={handleFormSubmit}>
+              <Button variant="success" type="submit">
                 Update
               </Button>
             </Col>
@@ -103,7 +114,9 @@ const WelcomePage = () => {
         </Form>
       </div>
 
-      <hr />
+      
+    </div>
+    </div>
     </div>
   );
 };
