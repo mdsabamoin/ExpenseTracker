@@ -18,6 +18,7 @@ const CustomLogin = () => {
 
     const dispatch = useDispatch();
     const enter = useSelector((state) => state.auth.enter);
+    const usr = localStorage.getItem("email");
        
     // Function to handle form submission
     const handleFormSubmit = async (event) => {
@@ -48,7 +49,8 @@ const CustomLogin = () => {
                 console.log(response.data);
                 if (idToken) {
                     dispatch(login());
-                    localStorage.setItem("idToken", idToken);
+                    localStorage.setItem("email",email);
+                    localStorage.setItem("idToken",idToken);
                     // dispatch(setIdToken({"idToken":idToken}));
                     // ctx.setEmailVerified(false);
                 }
@@ -72,9 +74,11 @@ const CustomLogin = () => {
         }
     };
 
+    
+
     return (
         <>
-            {!enter && (
+            {!usr && (
                 <div
                     style={{
                         display: "flex",

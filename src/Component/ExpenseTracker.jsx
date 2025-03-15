@@ -30,6 +30,7 @@ const ExpenseTracker = () => {
             setIsLoading(true);
             try {
                 const response = await axios.get(firebaseUrl);
+                console.log("response",response);
                 if (response.data) {
                     const loadedExpenses = Object.keys(response.data).map((key) => ({
                         id: key,
@@ -86,7 +87,7 @@ const ExpenseTracker = () => {
                 const response = await axios.post(firebaseUrl, formData);
                 const newExpense = { id: response.data.name, ...formData };
                 dispatch(addExpense(newExpense));
-                setSuccessMessage("Expense added successfully!");
+                setSuccessMessage("");
             }
 
             setFormData({ amount: "", description: "", category: "Food" });

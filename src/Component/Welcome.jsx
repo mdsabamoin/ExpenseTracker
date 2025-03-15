@@ -25,6 +25,7 @@ const Welcome = () => {
   const logoutHandler = () => {
     dispatch(logout());
     // dispatch(Verified(false));
+    localStorage.removeItem("email");
     localStorage.removeItem("idToken");
     localStorage.removeItem("form");
   };
@@ -50,7 +51,7 @@ const Welcome = () => {
   };
 
   const renderHeader = () => {
-    if (EmailVerified) {
+    
       return (
         <div className="header" style={{display:"flex",justifyContent:"space-between",backgroundColor:"lightgreen"}}>
           <h4>
@@ -71,9 +72,6 @@ const Welcome = () => {
             >
               Complete Now
             </Button>
-            <Button variant="success" className="verified-btn" style={{fontSize:"small"}}>
-              Verified <MdVerified />
-            </Button>
             <Button
               variant="info"
               className="logout-btn"
@@ -85,31 +83,11 @@ const Welcome = () => {
           </div>
         </div>
       );
-    } else {
-      return (
-        <div className="header" style={{display:"flex",justifyContent:"space-between"}}>
-          <h4>Welcome to Expense Tracker!!!</h4>
-          <div className="auth-actions">
-            <Button
-              variant="primary"
-              className="verify-email-btn"
-              onClick={sendVerificationEmail}
-              style={{fontSize:"small"}}
-            >
-              Verify Email
-            </Button>
-            <Button
-              variant="success"
-              className="logout-btn"
-              onClick={logoutHandler}
-              style={{fontSize:"small",marginLeft:"1%"}}
-            >
-              Log Out
-            </Button>
-          </div>
-        </div>
-      );
-    }
+     
+      
+        
+      
+    
   };
 
   return (
